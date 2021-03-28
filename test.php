@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 class ShopProduct
 {
-	public $title;
-	public $producerMainName;
-	public $producerFirstName;
-	public $price;
+	protected $title;
+	protected $producerMainName;
+	protected $producerFirstName;
+	protected $price;
+	private $discount = 0;
 
 	public function __construct
 	(
@@ -21,6 +22,36 @@ class ShopProduct
 		$this->producerMainName = $mainName;
 		$this->producerFirstName = $firstName;
 		$this->price = $price;
+	}
+
+	public function getProducerFirstName()
+	{
+		return $this->producerFirstName;
+	}
+
+	public function getProducerMainName()
+	{
+		return $this->producerMainName;
+	}
+
+	public function setDiscount($num)
+	{
+		$this->discount = $num;
+	}
+
+	public function getDiscount()
+	{
+		return $this->discount;
+	}
+
+	public function getTitle()
+	{
+		return $this->title;
+	}
+
+	public function getPrice()
+	{
+		return ($this->price - $this->discount);
 	}
 
 	public function getProducer()
@@ -38,7 +69,7 @@ class ShopProduct
 
 class CdProduct extends ShopProduct
 {
-	public $playLength;
+	private $playLength;
 
 	public function __construct
 	(
@@ -66,7 +97,8 @@ class CdProduct extends ShopProduct
 
 	public function getSummaryLine()
 	{
-		$base = parent::getSummaryLine();
+		$base = "{$this->title} ( {$this->producerMainName}, ";
+		$base .= "{$this->producerFirstName} )";
 		$base .= ": Время звучания - {$this->playLength}\n";
 		return $base;
 	}
@@ -74,7 +106,7 @@ class CdProduct extends ShopProduct
 
 class BookProduct extends ShopProduct
 {
-	public $numPages;
+	private $numPages;
 
 	public function __construct
 	(
@@ -106,6 +138,11 @@ class BookProduct extends ShopProduct
 		$base .= ": {$this->numPages} стр.\n";
 		return $base;
 	}
+
+	public function getPrice()
+	{
+		return $this->price;
+	}
 }
 
 class ShopProductWriter
@@ -122,14 +159,13 @@ class ShopProductWriter
 		$str = "";
 		foreach ($this->products as $shopProduct)
 		{
-			$str .= "{$shopProduct->title}: ";
+			$str .= "{$shopProduct->getTitle()}: ";
 			$str .= $shopProduct->getProducer();
-			$str .= " ({$shopProduct->price})\n";
+			$str .= " ({$shopProduct->getPrice()})\n";
 		}
 		print $str;
 	}
 }
-
 
 $writer = new ShopProductWriter();
 
@@ -149,4 +185,5 @@ print "Автор: {$product3->getProducer()}\n";
 print $product3->getSummaryLine();
 
 $writer->write();
+
 ?>
