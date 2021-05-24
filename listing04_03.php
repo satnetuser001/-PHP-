@@ -227,6 +227,6 @@ class Selector{
 }
 
 $objSelector = new Selector();
-//$objSelector->setAccessPar($db = 'tosha');//именованные аргументы работают с PHP 8
+//$objSelector->setAccessPar(db: 'tosha');//именованные аргументы работают с PHP 8
 $objSelector->request(3);
 ?>
