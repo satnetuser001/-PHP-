@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-class ShopProduct
-{
+class ShopProduct{
 	protected $title;
 	protected $producerMainName;
 	protected $producerFirstName;
@@ -15,7 +14,7 @@ class ShopProduct
 		string $firstName,
 		string $mainName,
 		float $price
-	){
+		){
 		$this->title = $title;
 		$this->producerMainName = $mainName;
 		$this->producerFirstName = $firstName;
@@ -57,8 +56,7 @@ class ShopProduct
 	}
 }
 
-class CdProduct extends ShopProduct
-{
+class CdProduct extends ShopProduct{
 	private $playLength;
 
 	public function __construct(
@@ -67,7 +65,7 @@ class CdProduct extends ShopProduct
 		string $mainName,
 		float $price,
 		float $playLength
-	){
+		){
 		parent::__construct(
 			$title,
 			$firstName,
@@ -92,14 +90,13 @@ class CdProduct extends ShopProduct
 class BookProduct extends ShopProduct{
 	private $numPages;
 
-	public function __construct
-	(
+	public function __construct(
 		string $title,
 		string $firstName,
 		string $mainName,
 		float $price,
 		int $numPages
-	){
+		){
 		parent::__construct(
 			$title,
 			$firstName,
@@ -142,91 +139,105 @@ class ShopProductWriter{
 	}
 }
 
-class Selector{
+class DBrequest{
 
 	//protected const HOST = '127.0.0.1';
-	protected $host = '127.0.0.1';
-	protected $db   = 'PHPstudy';
-	protected $user = 'admin';
-	protected $pass = '2108';
-	protected $charset = 'utf8';
-	protected $tableName = 'shopProduct';
-	protected $arr =[];
-	protected $product;
+	static protected $host = '127.0.0.1';
+	static protected $db   = 'PHPstudy';
+	static protected $user = 'admin';
+	static protected $pass = '2108';
+	static protected $charset = 'utf8';
+	static protected $tableName = 'shopProduct';
 
-	public function setAccessPar(
+	static public function request(int $id){
+		$pdo = new pdo("mysql:host=" . self::$host . ";dbname=" . self::$db . ";charset=" . self::$charset, self::$user, self::$pass);
+		$sql = "SELECT * FROM " . self::$tableName . " WHERE id=$id";
+		$result = $pdo->query($sql);
+		//var_dump($result);
+		return $result;
+	}		
+
+	static public function setAccessPar(//именованные аргументы работают с PHP 8
 		$host = NULL,
 		$db = NULL,
 		$user = NULL,
 		$pass = NULL,
 		$charset = NULL,
 		$tableName = NULL
-	){
+		){
 		if ($host != NULL){
-			$this->host=$host;
+			self::$host=$host;
 		}
 		elseif ($db != NULL){
-			$this->db=$db;
+			self::$db=$db;
 		}
 		elseif ($user != NULL){
-			$this->user=$user;
+			self::$user=$user;
 		}
 		elseif ($pass != NULL){
-			$this->pass=$pass;
+			self::$pass=$pass;
 		}
 		elseif ($pass != NULL){
-			$this->charset=$charset;
+			self::$charset=$charset;
 		}
 		elseif ($tableName != NULL){
-			$this->tableName=$tableName;
-		}
-		echo '$host = ' . $this->host . ', $db = ' . $this->db . ', $user = ' . $this->user . ', $pass = ' . $this->pass . ', $charset = ' . $this->charset . ', $tableName = ' . $this->tableName;
+			self::$tableName=$tableName;
+		}		
 	}
 
-	public function request(int $id){
-		$pdo = new pdo("mysql:host=$this->host; dbname=$this->db; charset=$this->charset", $this->user, $this->pass);
-		//$pdo = new pdo("mysql:host=" . self::HOST . "; dbname=$this->db; charset=$this->charset", $this->user, $this->pass);//если необходимо использовать константу в pdo запросе
-		$sql = "SELECT * FROM $this->tableName WHERE id=$id";
-		$result = $pdo->query($sql);
-		$this->arr = $result->fetchAll(PDO::FETCH_ASSOC);
-		print_r($this->arr);
-		$this->objCreator();
+	static public function getAccessPar(){
+		echo '$host = ' . self::$host . ', $db = ' . self::$db . ', $user = ' . self::$user . ', $pass = ' . self::$pass . ', $charset = ' . self::$charset . ', $tableName = ' . self::$tableName;
+	}
+}
+
+class ProductSelector{
+	protected $DBrequest;
+	protected $product;
+
+	public function DBrequest(int $id){
+		$result = DBrequest::request($id);
+		$this->DBrequest = $result->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	protected function objCreator(){
-		if ($this->arr[0]['type'] == "book"){
+	public function CreatProduct(){
+		if ($this->DBrequest[0]['type'] == "book"){
 			$this->product = new BookProduct(
-				$this->arr[0]['title'],
-				$this->arr[0]['producerFirstName'],
-				$this->arr[0]['producerMainName'],
-				(float) $this->arr[0]['price'],
-				(int) $this->arr[0]['otherCharacteristic']
+				$this->DBrequest[0]['title'],
+				$this->DBrequest[0]['producerFirstName'],
+				$this->DBrequest[0]['producerMainName'],
+				(float) $this->DBrequest[0]['price'],
+				(int) $this->DBrequest[0]['otherCharacteristic']
 			);
 		}
 
-		elseif ($this->arr[0]['type'] == "cd"){
+		elseif ($this->DBrequest[0]['type'] == "cd"){
 			$this->product = new CdProduct(
-				$this->arr[0]['title'],
-				$this->arr[0]['producerFirstName'],
-				$this->arr[0]['producerMainName'],
-				(float) $this->arr[0]['price'],
-				(int) $this->arr[0]['otherCharacteristic']
+				$this->DBrequest[0]['title'],
+				$this->DBrequest[0]['producerFirstName'],
+				$this->DBrequest[0]['producerMainName'],
+				(float) $this->DBrequest[0]['price'],
+				(int) $this->DBrequest[0]['otherCharacteristic']
 			);
 		}
 
-		elseif ($this->arr[0]['type'] == NULL){
+		elseif ($this->DBrequest[0]['type'] == NULL){
 			$this->product = new ShopProduct(
-				$this->arr[0]['title'],
-				$this->arr[0]['producerFirstName'],
-				$this->arr[0]['producerMainName'],
-				(float) $this->arr[0]['price']
+				$this->DBrequest[0]['title'],
+				$this->DBrequest[0]['producerFirstName'],
+				$this->DBrequest[0]['producerMainName'],
+				(float) $this->DBrequest[0]['price']
 			);
 		}
 		var_dump($this->product);
 	}
 }
 
-$objSelector = new Selector();
-//$objSelector->setAccessPar(db: 'tosha');//именованные аргументы работают с PHP 8
-$objSelector->request(3);
+/*DBrequest::setAccessPar(db: 'tosha');
+DBrequest::getAccessPar();
+echo "\n";*/
+
+$objProductSelector = new ProductSelector();
+$objProductSelector->DBrequest(3);
+$objProductSelector->CreatProduct();
+
 ?>
