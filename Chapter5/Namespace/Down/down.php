@@ -2,7 +2,7 @@
 namespace down;
 $downVar = "request from down";
 
-function downf($e = "non arg"){
+function downf($e = "no arg"){
 	echo "echo from down dir, $e\n";
 }
 
