@@ -3,7 +3,7 @@
 require_once('down/down.php');
 $upVar = "request from up";
 
-function upf($e = "non arg"){
+function upf($e = "no arg"){
 	echo "echo from up dir, $e\n";
 }
 upf($upVar);
