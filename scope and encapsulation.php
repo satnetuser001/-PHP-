@@ -46,7 +46,7 @@ class Main
 	}
 
 	/*
-	2 don't work!!!
+	//2 don't work!!!
 	public function getVarHolder()
 	{
 		return $objHolderVar->var;
@@ -85,7 +85,7 @@ $objMain->getVarPublicToAll();
 echo $objMain->getVarPublicToAll($varPublicToAll) . ", вызов переменной из objMain->getVarPublicToAll (с пердачей переменной в метод)" . "\n";
 
 /*
-2 don't work!!!
+//2 don't work!!!
 echo $objMain->getVarHolder();
 echo $objMain->getVarHolderFunc();
 */
